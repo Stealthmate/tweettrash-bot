@@ -5,7 +5,7 @@ from datetime import date, timedelta
 def run():
     api = common.init_api()
     statuses = common.get_prev_day_statuses(api=api)
-    day = date.today() - timedelta(days=1)
+    day = common.today() - timedelta(days=1)
 
     df = pd.DataFrame([
         {
@@ -32,7 +32,7 @@ def run():
 '''
     print(post)
     print("Posting ...")
-    common.post_tweet(post, api=api)
+    # common.post_tweet(post, api=api)
     print("OK!")
 
 if __name__ == '__main__':

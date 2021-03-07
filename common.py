@@ -15,6 +15,9 @@ OUTPUT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S %z'
 
 TZ = pytz.timezone('Asia/Tokyo')
 
+def today():
+    return datetime.today().astimezone(tz=TZ).date()
+
 def init_api():
     return twitter.Api(
         consumer_key=CONSUMER_KEY,
@@ -30,8 +33,8 @@ def get_prev_day_statuses(api=None):
     if api is None:
         api = init_api()
 
-    today = date.today()
-    target = date.today() - timedelta(days=1)
+    today_ = today()
+    target = today_ - timedelta(days=1)
     since = target - timedelta(days=1)
 
     theresults = []
