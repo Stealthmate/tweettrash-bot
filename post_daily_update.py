@@ -32,7 +32,7 @@ def run():
 '''
     print(post)
     print("Posting ...")
-    # common.post_tweet(post, api=api)
+    common.post_tweet(post, api=api)
     print("OK!")
 
 if __name__ == '__main__':
