@@ -52,7 +52,8 @@ def get_prev_day_statuses(api=None):
         results = api.GetListTimeline(max_id=maxid, **kwargs)
         print(f"Got {len(results)} tweets!")
         sleep(1)
-    return [x for x in theresults if time_created(x).date() == target]
+    results = [x for x in theresults if time_created(x).date() == target]
+    return [x for x in results if x.user.screen_name != 'tweettrashbot']
 
 def post_tweet(txt, api=None):
     if not api:
