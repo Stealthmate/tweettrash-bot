@@ -8,33 +8,44 @@ from tweettrashbot import settings
 from tweettrashbot.common import init_api, now, time_created, post_tweet
 from tweettrashbot.service import cache_tweets
 
-def fetch_tweets(since=None):
+def fetch_user_tweets(since, screen_name):
     if since is None:
-        since = now() - timedelta(minutes=10)
+        since = now() - timedelta(hours=1)
     elif not isinstance(since, datetime):
         raise ValueError("Must be datetime instance")
 
     api = init_api()
     kwargs = {
-        'list_id': settings.LIST_ID,
+        # 'list_id': settings.LIST_ID,
+        'screen_name': screen_name,
         'include_rts': False,
-        'count': 50
+        'count': 200
     }
 
     maxid = -1
     total = 0
 
-    results = api.GetListTimeline(**kwargs)
+    results = api.GetUserTimeline(**kwargs)
     theresults = []
     while len(results) > 1 and time_created(results[0]) > since:
         theresults.extend(results)
         maxid = results[-1].id
-        results = api.GetListTimeline(max_id=maxid, **kwargs)
+        results = api.GetUserTimeline(max_id=maxid, **kwargs)
         print(f"Got {len(results)} tweets!")
         sleep(1)
     results = [x for x in theresults if time_created(x) > since and x.user.screen_name != 'tweettrashbot']
 
     cache_tweets(results)
+
+
+def fetch_tweets(since=None):
+    conn = sqlite3.connect(settings.DB_LOCATION)
+    cur = conn.cursor()
+    cur.execute('SELECT username FROM members;')
+    members = [x[0] for x in cur.fetchall()]
+    for m in members:
+        print(f"Fetching {m}'s tweets...")
+        fetch_user_tweets(since, m)
 
 def sync_members():
     api = init_api()
@@ -73,3 +84,8 @@ def post_daily_report():
     print(post)
 
     post_tweet(post)
+
+# def push_daily_details():
+#     sync_members()
+
+#     pass
