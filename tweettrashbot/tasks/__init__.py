@@ -5,7 +5,7 @@ from itertools import chain
 
 from tweettrashbot import settings
 
-from tweettrashbot.common import init_api, now, time_created
+from tweettrashbot.common import init_api, now, time_created, post_tweet
 from tweettrashbot.service import cache_tweets
 
 def fetch_tweets(since=None):
@@ -67,7 +67,9 @@ def post_daily_report():
     post = f'''昨日 ({t.year}-{t.month:02}-{t.day - 1:02}) の活動まとめ：
 総ツイート数: {total} ツイート
 活動者数　　: {len(stats)}
-ツイ廃王者　: @{top[0]} ({top[1]} ツイート，全体の {100 * top[1] / total:.2f}%)
-ビリ廃　　　: @{bot[0]} ({bot[1]} ツイート，全体の {100 * bot[1] / total:.2f}%)
+ツイ廃王者　: {top[0]} ({top[1]} ツイート，全体の {100 * top[1] / total:.2f}%)
+ビリ廃　　　: {bot[0]} ({bot[1]} ツイート，全体の {100 * bot[1] / total:.2f}%)
 '''
     print(post)
+
+    common.post_tweet(post, api=api)
