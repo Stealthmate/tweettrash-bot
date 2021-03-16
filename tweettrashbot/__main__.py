@@ -10,6 +10,10 @@ def main():
         tasks.sync_members()
     elif p == 'post_daily_report':
         tasks.post_daily_report()
+    elif p == 'build_site':
+        tasks.build_site()
+    else:
+        raise ValueError('Invalid command')
 
     print("Hello!")
 

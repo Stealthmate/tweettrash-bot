@@ -8,9 +8,11 @@ from tweettrashbot import settings
 from tweettrashbot.common import init_api, now, time_created, post_tweet
 from tweettrashbot.service import cache_tweets
 
+from tweettrashbot.tasks import site
+
 def fetch_user_tweets(since, screen_name):
     if since is None:
-        since = now() - timedelta(hours=1)
+        since = now() - timedelta(hours=24)
     elif not isinstance(since, datetime):
         raise ValueError("Must be datetime instance")
 
@@ -66,7 +68,8 @@ def post_daily_report():
     conn = sqlite3.connect(settings.DB_LOCATION)
     cur = conn.cursor()
     t = datetime.now().astimezone(settings.TIMEZONE)
-    phs = [datetime(t.year, t.month, t.day - 1, 0, 0, 0).astimezone(settings.TIMEZONE), datetime(t.year, t.month, t.day - 1, 23, 59, 59).astimezone(settings.TIMEZONE)]
+    phs = [settings.TIMEZONE.localize(datetime(t.year, t.month, t.day - 1, 0, 0, 0)), settings.TIMEZONE.localize(datetime(t.year, t.month, t.day - 1, 23, 59, 59))]
+    print(phs[0].isoformat(), phs[1].isoformat())
     phs = [p.timestamp() for p in phs]
     cur.execute('SELECT members.username, count(tweets.tweet_id) FROM members LEFT JOIN tweets ON members.username = tweets.username AND created_at >= ? AND created_at <= ? WHERE members.username != \'tweettrashbot\' GROUP BY members.username', phs)
     stats = cur.fetchall()
@@ -81,11 +84,8 @@ def post_daily_report():
 ツイ廃王者　: @{top[0]} ({top[1]} ツイート，全体の {100 * top[1] / total:.2f}%)
 ビリ廃　　　: @{bot[0]} ({bot[1]} ツイート，全体の {100 * bot[1] / total:.2f}%)
 '''
-    print(post)
 
     post_tweet(post)
 
-# def push_daily_details():
-#     sync_members()
-
-#     pass
+def build_site():
+    site.build()
