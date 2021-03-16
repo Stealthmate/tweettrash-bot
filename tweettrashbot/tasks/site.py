@@ -100,7 +100,7 @@ class Job:
     def build_available_dates(self):
         cur = self.conn.cursor()
         cur.execute('SELECT created_at / (3600 * 24) as x FROM tweets GROUP BY x;')
-        ts = [datetime.utcfromtimestamp(x[0] * 3600 * 24).astimezone(settings.TIMEZONE) for x in cur.fetchall()]
+        ts = [datetime.fromtimestamp(x[0] * 3600 * 24, timezone.utc).astimezone(settings.TIMEZONE) for x in cur.fetchall()]
         return [t.strftime('%Y-%m-%d') for t in ts]
 
     def run(self):
