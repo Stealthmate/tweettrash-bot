@@ -1,6 +1,6 @@
 import sqlite3
 from time import sleep
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from itertools import chain
 
 from tweettrashbot import settings
@@ -67,8 +67,9 @@ def post_daily_report():
     sync_members()
     conn = sqlite3.connect(settings.DB_LOCATION)
     cur = conn.cursor()
-    t = datetime.now().astimezone(settings.TIMEZONE)
-    phs = [settings.TIMEZONE.localize(datetime(t.year, t.month, t.day - 1, 0, 0, 0)), settings.TIMEZONE.localize(datetime(t.year, t.month, t.day - 1, 23, 59, 59))]
+    t = datetime.now(tz=timezone.utc).astimezone(settings.TIMEZONE)
+    phs = [datetime(t.year, t.month, t.day - 1, 0, 0, 0), datetime(t.year, t.month, t.day - 1, 23, 59, 59)]
+    phs = [p.astimezone(timezone.utc).astimezone(settings.TIMEZONE) for p in phs]
     print(phs[0].isoformat(), phs[1].isoformat())
     phs = [p.timestamp() for p in phs]
     cur.execute('SELECT members.username, count(tweets.tweet_id) FROM members LEFT JOIN tweets ON members.username = tweets.username AND created_at >= ? AND created_at <= ? WHERE members.username != \'tweettrashbot\' GROUP BY members.username', phs)
