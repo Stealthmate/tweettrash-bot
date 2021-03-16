@@ -50,7 +50,7 @@ export default {
   },
   watch: {
     loaded() {
-      this.day = this.dates ? this.dates[0] : this.undefined;
+      this.day = this.dates ? this.dates[this.dates.length - 1] : undefined;
     }
   },
   created() {
