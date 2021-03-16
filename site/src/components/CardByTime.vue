@@ -50,16 +50,17 @@
 </template>
 
 <script>
-  var SVG_WIDTH = 500;
-  var SVG_ASPECT_RATIO = 12/5;
-  var SVG_M_X = 10;
-  var SVG_M_B = 50;
-  var SVG_TEXT_OFFSET = 20;
-  var SVG_XAXIS_OFFSET = 25;
+import { mapGetters } from 'vuex';
+var SVG_WIDTH = 500;
+var SVG_ASPECT_RATIO = 12/5;
+var SVG_M_X = 10;
+var SVG_M_B = 50;
+var SVG_TEXT_OFFSET = 20;
+var SVG_XAXIS_OFFSET = 25;
 export default {
   name: 'CardByTime',
   props: {
-    thedata: { type: Object }
+    timedata: { type: Object }
   },
   data() {
     return {
@@ -67,9 +68,9 @@ export default {
     };
   },
   computed: {
-
+    ...mapGetters(['users']),
     select_users() {
-      let us = this.thedata.users;
+      let us = this.users;
       let r = Object.keys(us).map(k => {
         return {
           text: us[k].name,
@@ -81,7 +82,7 @@ export default {
     },
     tweetcount_timeline: function() {
       var root = this;
-      return this.thedata.by_time[this.user].map(
+      return this.timedata[this.user].map(
         function(x, i) {
           var y = JSON.parse(JSON.stringify(x));
           var h = root.svg_height * x.density;
