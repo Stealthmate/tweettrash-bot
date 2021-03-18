@@ -3,6 +3,8 @@ from time import sleep
 from datetime import datetime, date, timedelta, timezone
 from itertools import chain
 
+import twitter
+
 from tweettrashbot import settings
 
 from tweettrashbot.common import init_api, now, time_created, post_tweet
@@ -47,7 +49,12 @@ def fetch_tweets(since=None):
     members = [x[0] for x in cur.fetchall()]
     for m in members:
         print(f"Fetching {m}'s tweets...")
-        fetch_user_tweets(since, m)
+        try:
+            fetch_user_tweets(since, m)
+        except twitter.error.TwitterError as e:
+            print(e)
+            print(f"Skipping {m}")
+
 
 def sync_members():
     api = init_api()
