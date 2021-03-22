@@ -14,7 +14,7 @@ from tweettrashbot.tasks import site
 
 def fetch_user_tweets(since, screen_name):
     if since is None:
-        since = now(tz=timezone.utc).astimezone(settings.TIMEZONE) - timedelta(hours=24)
+        since = now(timezone.utc).astimezone(settings.TIMEZONE) - timedelta(hours=24)
     elif not isinstance(since, datetime):
         raise ValueError("Must be datetime instance")
 
@@ -74,7 +74,7 @@ def post_daily_report():
     sync_members()
     conn = sqlite3.connect(settings.DB_LOCATION)
     cur = conn.cursor()
-    t = datetime.now(tz=timezone.utc).astimezone(settings.TIMEZONE)
+    t = datetime.now(timezone.utc).astimezone(settings.TIMEZONE)
     phs = [datetime(t.year, t.month, t.day - 1, 0, 0, 0), datetime(t.year, t.month, t.day - 1, 23, 59, 59)]
     phs = [p.astimezone(timezone.utc).astimezone(settings.TIMEZONE) for p in phs]
     print(phs[0].isoformat(), phs[1].isoformat())
