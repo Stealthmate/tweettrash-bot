@@ -14,7 +14,7 @@ from tweettrashbot.tasks import site
 
 def fetch_user_tweets(since, screen_name):
     if since is None:
-        since = now() - timedelta(hours=24)
+        since = now(tz=timezone.utc).astimezone(settings.TIMEZONE) - timedelta(hours=24)
     elif not isinstance(since, datetime):
         raise ValueError("Must be datetime instance")
 
